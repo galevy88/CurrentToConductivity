@@ -9,3 +9,5 @@ After that, linear regression was calculated for each dataframe to get the curre
 After that, the current was subtracted from the membrane potential for all the current dataframes. The result was divided by the specific Volt at each point minus the Nernst potential of potassium.
 
 I fetched the result as 4 graphs. one of the graphs is the conductivity graph of the membrane to potassium at any moment in time.
+
+Last Commit = "Normalized" Actually what I made is to divide all the DataFrame by the highest vaulu of the highest voltage to get normalized results for all the DataFrame between 0-1
