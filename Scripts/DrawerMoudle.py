@@ -10,42 +10,53 @@ MINVALUE1 = -0.05
 MINVALUE2 = 0
 
 
-def draw_subplot(dF1, dF2, dF3, dF4, dF5, cell_id, temperature):
+def draw_subplot(current_df, current_df_after_subtract, cunductivity_df, cut, dots,cunductivity_normalize_higher_value, cell_id, temperature):
 
-    y1_max = dF1.iloc[5000][80]
-    y2_max = dF2.iloc[5000][80]
-    y3_max = dF3.iloc[5000][80]
+    y1_max = current_df.iloc[5000][80]
+    y2_max = current_df_after_subtract.iloc[5000][80]
+    y3_max = cunductivity_df.iloc[5000][80]
     epsilon1 = y1_max/MINOR_FACTOR
     epsilon2 = y2_max/MINOR_FACTOR
     epsilon3 = y3_max/MAJOR_FACTOR
 
 
-    fig, axs = plt.subplots(2, 2)
-    fig.set_size_inches(13, 7.5)
-    axs[0, 0].plot(dF1)
+    fig, axs = plt.subplots(2, 3)
+    fig.set_size_inches(16, 7.5)
+    axs[0, 0].plot(current_df)
     axs[0, 0].set_title("current dF")
     if temperature == '15':
         axs[0, 0].set_ylim(MINVALUE1, y1_max + epsilon1)
 
-    axs[1, 0].plot(dF2)
+    axs[1, 0].plot(current_df_after_subtract)
     axs[1, 0].set_title("current dF after subtract")
     if temperature == '15':
         axs[1, 0].set_ylim(MINVALUE1, y2_max + epsilon2)
 
-    axs[0, 1].plot(dF3)
+    axs[0, 1].plot(cunductivity_df)
     axs[0, 1].set_title("cunductivity dF")
     if temperature == '15':
         axs[0, 1].set_ylim(MINVALUE2, y3_max + epsilon3)
 
-    axs[1, 1].plot(dF4, color = 'red', label = 'Historical data')
-    axs[1, 1].plot(dF5, color = 'red', label = 'Historical data')
+    axs[1, 1].plot(cut, color = 'red', label = 'Historical data')
+    axs[1, 1].plot(dots, color = 'red', label = 'Historical data')
     axs[1, 1].set_title("cut")
-    default_x_ticks = range(len(dF4))
-    axs[1, 1].plot(default_x_ticks, dF4)
+    default_x_ticks = range(len(cut))
+    axs[1, 1].plot(default_x_ticks, cut)
     plt.xticks(default_x_ticks, VOLT_ARR)
 
+    axs[0, 2].plot(cunductivity_normalize_higher_value)
+    axs[0, 2].set_title("cunductivity_normalize_higher_value")
+    if temperature == '15':
+        axs[0, 2].set_ylim(-0.05, 1.05)
+
+    
+    axs[0, 2].plot(cunductivity_normalize_higher_value)
+    axs[0, 2].set_title("cunductivity_normalize_higher_value")
+    if temperature == '15':
+        axs[0, 2].set_ylim(-0.05, 1.05)
+
     fig.tight_layout()
-    fig.suptitle(f'id: {cell_id} temp: {temperature}')
+    fig.suptitle(f'id: {cell_id} temp: {temperature}\n')
     plt.show()
 
 

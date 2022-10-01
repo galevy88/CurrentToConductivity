@@ -1,8 +1,11 @@
 
+from statistics import LinearRegression
 import pandas as pd
 import matplotlib.pyplot as plt
 import DrawerMoudle
+import numpy as np
 from asyncio.windows_events import NULL
+from sklearn.linear_model import LogisticRegression
 
 
 
@@ -12,13 +15,18 @@ def create_ls():
         ls.append(i)
     return ls
     
+def create_ls_1():
+    ls = []
+    for i in range (0,18):
+        ls.append(i)
+    return ls
 
 CHOSEN_ROW = 3550
 LEFT_VOLT_EDGE = -90
 RIGHT_VOLT_EDGE = -60
 VOLT_ARR = [-90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60 ,70, 80] ######### CHECK FOR CORRECTION #########
 VOLT_Index = [-100, -90, -80, -70, -60, -50, -40, -30, -20, -10, 0, 10, 20, 30, 40, 50, 60 ,70, 80] ######### CHECK FOR CORRECTION #########
-Ek = -100
+
 
 
 class Cell:
@@ -29,10 +37,20 @@ class Cell:
         self.current_dF = NULL
         self.current_dF_after_substract = NULL
         self.cunductivity_dF = NULL
+        self.cunductivity_dF_normalize_high_value = NULL
         self.cut = NULL
+        self.high_value = NULL
         self.slope = NULL
         self.b = NULL
         self.dots = NULL
+        self.Ek = self.generate_Ek()
+
+    def generate_Ek(self):
+        temperature_str = self.information_Dictonary["temperature"]
+        temperature = float(temperature_str)
+        Ek = -0.285 * (temperature + 273)
+        print(Ek)
+        return Ek
 
     def get_df_for_myself(self):
         ls = create_ls()
@@ -90,12 +108,37 @@ class Cell:
         self.cunductivity_dF = self.current_dF_after_substract.copy()
         for column in self.current_dF_after_substract:
             col_to_add = self.current_dF_after_substract[column]
-            self.cunductivity_dF[column] = col_to_add.div(VOLT_ARR[i] - Ek)
+            self.cunductivity_dF[column] = col_to_add.div(VOLT_ARR[i] - self.Ek)
             i+=1
+
+    def generate_high_value(self):
+        last_col = self.cunductivity_dF.iloc[ : , -1:].values
+        self.high_value = max(last_col)
+        print(self.high_value)
+
+    def create_cunductivity_dF_normalize_by_high_value(self):
+        self.cunductivity_dF_normalize_high_value = self.cunductivity_dF.div(self.high_value[0])
+
+    def generate_A_sigmoid_value(self):
+        ls = []
+        for column in self.cunductivity_dF:
+            ls.append(max(self.cunductivity_dF[column]))
+        
+        # classifier = LogisticRegression(random_state = 0)
+        # fit_ls = create_ls_1()
+        # fit_ls = np.array(fit_ls)
+        # ls = np.array(ls)
+        # fit_ls = fit_ls.reshape(len(fit_ls),1)
+        # ls = ls.reshape(len(ls),1)
+        # classifier.fit(fit_ls, ls)
+        # print(f'COEF: {classifier.coef_}')
+
+        plt.plot(ls)
+        plt.show()
 
     # DRAW AREA
     def send_to_draw(self):
-        DrawerMoudle.draw_subplot(self.current_dF, self.current_dF_after_substract, self.cunductivity_dF, self.cut, self.dots, self.information_Dictonary["cell_id"], self.information_Dictonary["temperature"])
+        DrawerMoudle.draw_subplot(self.current_dF, self.current_dF_after_substract, self.cunductivity_dF, self.cut, self.dots, self.cunductivity_dF_normalize_high_value, self.information_Dictonary["cell_id"], self.information_Dictonary["temperature"])
 
 
     # DICT AREA

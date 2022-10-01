@@ -28,7 +28,6 @@ class Handler:
         for c in self.Cell_List:
             c.generate_mid_Cut()
 
-
     def calc_inear_regression_for_cells(self):
         for c in self.Cell_List:
             c.calc_linear_regression()
@@ -46,6 +45,18 @@ class Handler:
     def create_cunductivity_for_cells(self):
         for c in self.Cell_List:
             c.create_cunductivity_dF()
+    
+    def generate_high_value_for_all_cells(self):
+        for c in self.Cell_List:
+            c.generate_high_value()
+
+    def create_cunductivity_normalize_by_high_value_for_cells(self):
+        for c in self.Cell_List:
+            c.create_cunductivity_dF_normalize_by_high_value()
+
+    def generate_A_Sigmoid_value_for_all_cells(self):
+        for c in self.Cell_List:
+            c.generate_A_sigmoid_value()
 
     def draw_all(self):
         for c in self.Cell_List:
@@ -69,6 +80,9 @@ handler.calc_inear_regression_for_cells()
 handler.create_dots_arr_for_cells()
 handler.create_dF_subtract_for_cells()
 handler.create_cunductivity_for_cells()
-handler.draw_all()
+handler.generate_high_value_for_all_cells()
+handler.create_cunductivity_normalize_by_high_value_for_cells()
+handler.generate_A_Sigmoid_value_for_all_cells()
+# handler.draw_all()
 # handler.fetch_cut_plot_for_cells()
 
