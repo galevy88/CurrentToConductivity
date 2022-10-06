@@ -44,12 +44,13 @@ class Cell:
         self.b = NULL
         self.dots = NULL
         self.Ek = self.generate_Ek()
+        self.sigmoid_Values = []
+        self.isChosen = 'NotDecided'
 
     def generate_Ek(self):
         temperature_str = self.information_Dictonary["temperature"]
         temperature = float(temperature_str)
         Ek = -0.285 * (temperature + 273)
-        print(Ek)
         return Ek
 
     def get_df_for_myself(self):
@@ -114,31 +115,27 @@ class Cell:
     def generate_high_value(self):
         last_col = self.cunductivity_dF.iloc[ : , -1:].values
         self.high_value = max(last_col)
-        print(self.high_value)
+        # print(f'High Value Of Cell {self.information_Dictonary["cell_id"]} is: {self.high_value[0]}')
 
     def create_cunductivity_dF_normalize_by_high_value(self):
         self.cunductivity_dF_normalize_high_value = self.cunductivity_dF.div(self.high_value[0])
 
     def generate_A_sigmoid_value(self):
-        ls = []
         for column in self.cunductivity_dF:
-            ls.append(max(self.cunductivity_dF[column]))
+            self.sigmoid_Values.append(max(self.cunductivity_dF[column]))
+        self.sigmoid_Values[1] = (self.sigmoid_Values[0] + self.sigmoid_Values[2]) / 2
         
-        # classifier = LogisticRegression(random_state = 0)
-        # fit_ls = create_ls_1()
-        # fit_ls = np.array(fit_ls)
-        # ls = np.array(ls)
-        # fit_ls = fit_ls.reshape(len(fit_ls),1)
-        # ls = ls.reshape(len(ls),1)
-        # classifier.fit(fit_ls, ls)
-        # print(f'COEF: {classifier.coef_}')
 
-        plt.plot(ls)
-        plt.show()
+    def get_normalize_cunductivity_df(self):
+        return self.cunductivity_dF_normalize_high_value
+
+    def set_is_chosen(self, choice):
+        self.isChosen = choice
+        
 
     # DRAW AREA
     def send_to_draw(self):
-        DrawerMoudle.draw_subplot(self.current_dF, self.current_dF_after_substract, self.cunductivity_dF, self.cut, self.dots, self.cunductivity_dF_normalize_high_value, self.information_Dictonary["cell_id"], self.information_Dictonary["temperature"])
+        DrawerMoudle.draw_subplot(self.current_dF, self.current_dF_after_substract, self.cunductivity_dF, self.cut, self.dots, self.cunductivity_dF_normalize_high_value, self.sigmoid_Values, self.information_Dictonary["cell_id"], self.information_Dictonary["temperature"], self.isChosen)
 
 
     # DICT AREA
@@ -183,3 +180,17 @@ class Cell:
     #     plt.plot(default_x_ticks, self.cut)
     #     plt.xticks(default_x_ticks, VOLT_ARR)
     #     plt.show()
+
+
+
+
+# FOR GENERTATE SIGMOID:
+
+        # classifier = LogisticRegression(random_state = 0)
+        # fit_ls = create_ls_1()
+        # fit_ls = np.array(fit_ls)
+        # ls = np.array(ls)
+        # fit_ls = fit_ls.reshape(len(fit_ls),1)
+        # ls = ls.reshape(len(ls),1)
+        # classifier.fit(fit_ls, ls)
+        # print(f'COEF: {classifier.coef_}')

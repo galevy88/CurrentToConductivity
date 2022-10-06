@@ -1,4 +1,5 @@
 
+from turtle import color
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -9,8 +10,15 @@ MINOR_FACTOR = 5
 MINVALUE1 = -0.05
 MINVALUE2 = 0
 
+def define_color(isChosen):
+    if isChosen == 'NotDecided':
+        return 'black'
+    if isChosen == 'Yes':
+        return 'green'
+    if isChosen == 'No':
+        return 'red'
 
-def draw_subplot(current_df, current_df_after_subtract, cunductivity_df, cut, dots,cunductivity_normalize_higher_value, cell_id, temperature):
+def draw_subplot(current_df, current_df_after_subtract, cunductivity_df, cut, dots,cunductivity_normalize_higher_value, sigmoid_Values, cell_id, temperature, isChosen):
 
     y1_max = current_df.iloc[5000][80]
     y2_max = current_df_after_subtract.iloc[5000][80]
@@ -44,23 +52,31 @@ def draw_subplot(current_df, current_df_after_subtract, cunductivity_df, cut, do
     axs[1, 1].plot(default_x_ticks, cut)
     plt.xticks(default_x_ticks, VOLT_ARR)
 
+
+
     axs[0, 2].plot(cunductivity_normalize_higher_value)
     axs[0, 2].set_title("cunductivity_normalize_higher_value")
     if temperature == '15':
         axs[0, 2].set_ylim(-0.05, 1.05)
 
     
-    axs[0, 2].plot(cunductivity_normalize_higher_value)
-    axs[0, 2].set_title("cunductivity_normalize_higher_value")
-    if temperature == '15':
-        axs[0, 2].set_ylim(-0.05, 1.05)
+    axs[1, 2].plot(sigmoid_Values, color = 'red', label = 'Historical data')
+    axs[1, 2].set_title("sigmoid_Values")
+    default_x_ticks = range(len(sigmoid_Values))
+    axs[1, 2].plot(default_x_ticks, sigmoid_Values)
+    plt.xticks(default_x_ticks, VOLT_ARR)
 
     fig.tight_layout()
-    fig.suptitle(f'id: {cell_id} temp: {temperature}\n')
+    chosen_color = define_color(isChosen)
+    fig.suptitle(f'id: {cell_id} temp: {temperature}\n',  x=0.3, color=chosen_color)
     plt.show()
 
 
-
+def draw_final_avarage_df(df):
+    plt.plot(df)
+    ax = plt.gca()
+    ax.set_ylim([-0.05, 1.05])
+    plt.show()
 
 
 
